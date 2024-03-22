@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,8 +21,6 @@ public class SalesOrderEntity {
     private Long id;
 
     private Long customerId;
-
-    private BigDecimal totalPrice;
 
     private LocalDateTime createdAt;
 }

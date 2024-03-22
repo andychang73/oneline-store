@@ -2,8 +2,33 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.abstractionizer.Hello.World.storage.rmdb.mapper.ProductMapper">
 
+    <update id="updateStockByIds">
+        UPDATE product
+        SET stock = stock - (CASE
+            <foreach collection="products" item="item">
+                WHEN (id = #{item.productId}) THEN #{item.quantity}
+            </foreach> END)
+        WHERE id IN (
+            <foreach collection="products" item="item" separator=",">
+                #{item.productId}
+            </foreach>
+            )
+    </update>
+
+
     <select id="selectAll" resultType="com.abstractionizer.Hello.World.model.vo.ProductVo">
         SELECT id, name, price, stock
         FROM product
     </select>
+
+    <select id="getByIds" resultType="com.abstractionizer.Hello.World.model.vo.ProductVo">
+        SELECT id, name, price, stock
+        FROM product
+        WHERE id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
 </mapper>

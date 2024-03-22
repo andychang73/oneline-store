@@ -49,9 +49,11 @@ public class CustomerBusinessImpl implements CustomerBusiness {
     @Override
     public void updateCustomer(@NonNull final Long id, @NonNull final UpdateCustomerDto dto) {
 
-        customerService.checkPhoneOrThrow(dto.getPhone());
-
         CustomerEntity customerEntity = customerService.selectByIdOrThrow(id);
+
+        if(!customerEntity.getPhone().equals(dto.getPhone())){
+            customerService.checkPhoneOrThrow(dto.getPhone());
+        }
 
         customerEntity.setPhone(dto.getPhone());
         customerEntity.setName(dto.getName());

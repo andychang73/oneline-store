@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface SalesOrderMapper extends BaseMapper<SalesOrderEntity> {
+    int insertEntity(SalesOrderEntity salesOrder);
 }

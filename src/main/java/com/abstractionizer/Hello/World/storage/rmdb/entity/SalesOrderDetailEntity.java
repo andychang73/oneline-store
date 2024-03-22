@@ -20,7 +20,7 @@ public class SalesOrderDetailEntity {
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    private Long salesOrder;
+    private Long salesOrderId;
 
     private Long productId;
 

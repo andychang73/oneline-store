@@ -21,16 +21,15 @@ CREATE TABLE IF NOT EXISTS product(
 CREATE TABLE IF NOT EXISTS sales_order(
     id BIGINT AUTO_INCREMENT,
     customer_id BIGINT NOT NULL,
-    total_price DECIMAL(21,4),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS sales_order_detail(
     id BIGINT AUTO_INCREMENT,
-    sales_order BIGINT NOT NULL,
-    product BIGINT NOT NULL,
+    sales_order_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
     quantity INT NOT NULL,
-    subTotal DECIMAL(21,4)
+    sub_total DECIMAL(21,4)
 );
 
 INSERT INTO customer (phone, name, address) VALUES

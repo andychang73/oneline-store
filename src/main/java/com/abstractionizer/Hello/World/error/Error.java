@@ -7,6 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Error implements BaseError{
 
+    INSUFFICIENT_STOCK(500, "001001", "庫存不足"),
+
     DATA_NOT_FOUND(400, "002001", "資料不存在"),
     DATA_IS_CREATED(400, "002002", "資料已存在"),
     CREATE_DATA_FAILED(400, "002003", "建立失敗"),
