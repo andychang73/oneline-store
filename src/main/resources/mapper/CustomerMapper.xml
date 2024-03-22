@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abstractionizer.Hello.World.storage.rmdb.mapper.CustomerMapper">
+
+    <select id="selectByNames" resultType="com.abstractionizer.Hello.World.storage.rmdb.entity.CustomerEntity">
+        SELECT *
+        FROM customer
+        <if test="names != null and names.size() > 0">
+            WHERE name IN
+            <foreach collection="names" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="selectByPhone" resultType="com.abstractionizer.Hello.World.storage.rmdb.entity.CustomerEntity">
+        SELECT *
+        FROM customer
+        WHERE phone = #{phone}
+    </select>
+</mapper>
