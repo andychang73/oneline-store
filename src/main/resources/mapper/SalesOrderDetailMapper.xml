@@ -3,10 +3,10 @@
 <mapper namespace="com.abstractionizer.Hello.World.storage.rmdb.mapper.SalesOrderDetailMapper">
 
     <insert id="insertBatch">
-        INSERT INTO sales_order_detail (sales_order_id, product_id, quantity, sub_total)
+        INSERT INTO sales_order_detail (sales_order_id, product_id, product_name, quantity, price, sub_total)
         VALUES
         <foreach collection="salesOrderDetails" item="item" separator=",">
-            (#{item.salesOrderId}, #{item.productId}, #{item.quantity}, #{item.subTotal})
+            (#{item.salesOrderId}, #{item.productId}, #{item.productName}, #{item.quantity}, #{item.price}, #{item.subTotal})
         </foreach>
     </insert>
 

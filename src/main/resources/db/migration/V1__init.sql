@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS product(
 CREATE TABLE IF NOT EXISTS sales_order(
     id BIGINT AUTO_INCREMENT,
     customer_id BIGINT NOT NULL,
+    total DECIMAL(21,4) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -28,7 +29,9 @@ CREATE TABLE IF NOT EXISTS sales_order_detail(
     id BIGINT AUTO_INCREMENT,
     sales_order_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
+    product_name VARCHAR(32) NOT NULL,
     quantity INT NOT NULL,
+    price DECIMAL NOT NULL,
     sub_total DECIMAL(21,4)
 );
 
@@ -46,9 +49,9 @@ INSERT INTO customer (phone, name, address) VALUES
 ('0900-99999999', 'customer9', 'address9');
 
 INSERT INTO product (name, price, stock) VALUES
-('iPHone15', 40000.00, 1),
-('iPHone14', 30000.00, 100),
-('iPHone13', 20000.00, 100),
+('iPhone15', 40000.00, 1),
+('iPhone14', 30000.00, 100),
+('iPhone13', 20000.00, 100),
 ('Mac Pro 16-inch', 60000.00, 100),
 ('Mac Pro 13-inch', 50000.00, 100),
 ('Mac Air 15-inch', 40000.00, 100),

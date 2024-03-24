@@ -24,13 +24,14 @@ public class SalesOrderDetailServiceImpl implements SalesOrderDetailService {
     }
 
     @Override
-    public List<SalesOrderDetailEntity> getSalesOrderDetails(@NonNull final Long salesOrderId, @NonNull final List<ProductDto> orders,
+    public List<SalesOrderDetailEntity> getSalesOrderDetails(@NonNull final List<ProductDto> orders,
                                                              @NonNull final Map<Long, ProductVo> productMap) {
         return orders.stream()
                 .map(order -> SalesOrderDetailEntity.builder()
-                        .salesOrderId(salesOrderId)
                         .productId(order.getProductId())
+                        .productName(productMap.get(order.getProductId()).getName())
                         .quantity(order.getQuantity())
+                        .price(productMap.get(order.getProductId()).getPrice())
                         .subTotal(BigDecimal.valueOf(order.getQuantity()).multiply(productMap.get(order.getProductId()).getPrice()))
                         .build())
                 .collect(Collectors.toList());
@@ -42,5 +43,12 @@ public class SalesOrderDetailServiceImpl implements SalesOrderDetailService {
             return;
         }
         salesOrderDetailMapper.insertBatch(salesOrderDetails);
+    }
+
+    @Override
+    public BigDecimal getTotal(@NonNull final List<SalesOrderDetailEntity> salesOrderDetails) {
+        return salesOrderDetails.stream()
+                .map(SalesOrderDetailEntity::getSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

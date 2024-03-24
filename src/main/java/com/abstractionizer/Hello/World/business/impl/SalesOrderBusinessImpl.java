@@ -3,7 +3,10 @@ package com.abstractionizer.Hello.World.business.impl;
 import com.abstractionizer.Hello.World.business.SalesOrderBusiness;
 import com.abstractionizer.Hello.World.exception.BusinessException;
 import com.abstractionizer.Hello.World.model.dto.PlaceOrderDto;
+import com.abstractionizer.Hello.World.model.dto.SalesDetailsDto;
+import com.abstractionizer.Hello.World.model.vo.PageVo;
 import com.abstractionizer.Hello.World.model.vo.ProductVo;
+import com.abstractionizer.Hello.World.model.vo.SalesDetailsVo;
 import com.abstractionizer.Hello.World.service.CustomerService;
 import com.abstractionizer.Hello.World.service.ProductService;
 import com.abstractionizer.Hello.World.service.SalesOrderDetailService;
@@ -11,6 +14,7 @@ import com.abstractionizer.Hello.World.service.SalesOrderService;
 import com.abstractionizer.Hello.World.storage.rmdb.entity.CustomerEntity;
 import com.abstractionizer.Hello.World.storage.rmdb.entity.SalesOrderDetailEntity;
 import com.abstractionizer.Hello.World.storage.rmdb.entity.SalesOrderEntity;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,16 +60,28 @@ public class SalesOrderBusinessImpl implements SalesOrderBusiness {
         productService.updateProductStock(dto.getOrders());
 
         CustomerEntity customer = customerService.selectByIdOrThrow(dto.getCustomerId());
+        List<SalesOrderDetailEntity> salesOrderDetails = salesOrderDetailService.getSalesOrderDetails(dto.getOrders(), productMap);
 
         SalesOrderEntity salesOrder = SalesOrderEntity.builder()
                 .customerId(customer.getId())
+                .total(salesOrderDetailService.getTotal(salesOrderDetails))
                 .build();
 
         salesOrderService.insert(salesOrder);
 
-        List<SalesOrderDetailEntity> salesOrderDetails = salesOrderDetailService.getSalesOrderDetails(salesOrder.getId(), dto.getOrders(), productMap);
-
+        salesOrderDetails.forEach(detail -> detail.setSalesOrderId(salesOrder.getId()));
         salesOrderDetailService.insertBatch(salesOrderDetails);
 
+    }
+
+    @Override
+    public PageVo<SalesDetailsVo> getSalesDetails(@NonNull final SalesDetailsDto dto) {
+
+        IPage<SalesDetailsVo> salesDetails = salesOrderService.getSalesDetails(dto.getCustomerId(),
+                dto.getOrderId(), dto.getProductName(), dto.getFrom(), dto.getTo(), dto.getPage(), dto.getSize()
+        );
+
+        return new PageVo<>(salesDetails.getTotal(), salesDetails.getSize(),
+                salesDetails.getCurrent(), salesDetails.getPages(), salesDetails.getRecords());
     }
 }
