@@ -7,6 +7,7 @@ import com.abstractionizer.Hello.World.model.dto.SalesDetailsDto;
 import com.abstractionizer.Hello.World.model.vo.PageVo;
 import com.abstractionizer.Hello.World.model.vo.ProductVo;
 import com.abstractionizer.Hello.World.model.vo.SalesDetailsVo;
+import com.abstractionizer.Hello.World.model.vo.SalesStatisticsVo;
 import com.abstractionizer.Hello.World.service.CustomerService;
 import com.abstractionizer.Hello.World.service.ProductService;
 import com.abstractionizer.Hello.World.service.SalesOrderDetailService;
@@ -19,6 +20,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -77,11 +79,13 @@ public class SalesOrderBusinessImpl implements SalesOrderBusiness {
     @Override
     public PageVo<SalesDetailsVo> getSalesDetails(@NonNull final SalesDetailsDto dto) {
 
-        IPage<SalesDetailsVo> salesDetails = salesOrderService.getSalesDetails(dto.getCustomerId(),
-                dto.getOrderId(), dto.getProductName(), dto.getFrom(), dto.getTo(), dto.getPage(), dto.getSize()
-        );
+        List<Long> orderId = salesOrderService.getSalesDetailOrderIds(dto.getCustomerId(), dto.getOrderId(),
+                dto.getProductName(), dto.getFrom(), dto.getTo());
+
+        IPage<SalesDetailsVo> salesDetails = salesOrderService.getSalesDetails(orderId, dto.getPage(), dto.getSize());
 
         return new PageVo<>(salesDetails.getTotal(), salesDetails.getSize(),
                 salesDetails.getCurrent(), salesDetails.getPages(), salesDetails.getRecords());
     }
+
 }

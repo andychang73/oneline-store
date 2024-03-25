@@ -6,22 +6,8 @@
         INSERT INTO sales_order (customer_id, total) VALUES (#{customerId}, #{total})
     </insert>
 
-    <resultMap id="SalesDetailsVo" type="com.abstractionizer.Hello.World.model.vo.SalesDetailsVo">
-        <id column="orderId" property="orderId" jdbcType="BIGINT"/>
-        <result column="total" property="total" jdbcType="DECIMAL"/>
-        <result column="date" property="date" jdbcType="TIMESTAMP"/>
-        <collection property="productDetails" ofType="com.abstractionizer.Hello.World.model.vo.ProductDetailsVo">
-            <result column="productId" property="productId" jdbcType="BIGINT"/>
-            <result column="productName" property="productName" jdbcType="VARCHAR"/>
-            <result column="quantity" property="quantity" jdbcType="INTEGER"/>
-            <result column="price" property="price" jdbcType="DECIMAL"/>
-            <result column="subTotal" property="subTotal" jdbcType="DECIMAL"/>
-        </collection>
-    </resultMap>
-
-    <select id="selectByOrderIdOrProductNameOrCreatedAt" resultMap="SalesDetailsVo">
-        SELECT o.id AS orderId, o.total, o.created_at AS date, d.product_id AS productId,
-                d.product_name AS productName, d.quantity, d.price, d.sub_total AS subTotal
+    <select id="selectByOrderIdOrProductNameOrCreatedAt" resultType="java.lang.Long">
+        SELECT o.id
         FROM sales_order o
         JOIN sales_order_detail d ON d.sales_order_id = o.id
         <where>
@@ -41,6 +27,49 @@
                 AND created_at &lt;= #{to}
             </if>
         </where>
-        ORDER BY created_at DESC
     </select>
+
+    <resultMap id="SalesDetailsVo" type="com.abstractionizer.Hello.World.model.vo.SalesDetailsVo">
+        <id column="orderId" property="orderId" jdbcType="BIGINT"/>
+        <result column="total" property="total" jdbcType="DECIMAL"/>
+        <result column="date" property="date" jdbcType="TIMESTAMP"/>
+        <collection property="productDetails" ofType="com.abstractionizer.Hello.World.model.vo.ProductDetailsVo">
+            <result column="product_id" property="productId" jdbcType="BIGINT"/>
+            <result column="product_name" property="productName" jdbcType="VARCHAR"/>
+            <result column="quantity" property="quantity" jdbcType="INTEGER"/>
+            <result column="price" property="price" jdbcType="DECIMAL"/>
+            <result column="sub_total" property="subTotal" jdbcType="DECIMAL"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectByOrderId" resultMap="SalesDetailsVo">
+        SELECT o.id AS orderId, o.total, o.created_at AS date,
+                d.product_id, d.product_name, d.quantity, d.price, d.sub_total
+        FROM sales_order o
+        JOIN sales_order_detail d ON d.sales_order_id = o.id
+        WHERE o.id IN
+            <foreach collection="ids" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        ORDER BY o.created_at DESC
+    </select>
+
+    <resultMap id="SalesStatisticsVo" type="com.abstractionizer.Hello.World.model.vo.SalesStatisticsVo">
+        <result column="numOfSales" property="numOfSales" jdbcType="INTEGER"/>
+        <result column="totalRevenue" property="totalRevenue" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <select id="selectByFromAndToDate" resultType="com.abstractionizer.Hello.World.model.vo.SalesStatisticsVo">
+        SELECT COUNT(id) as numOfSales, SUM(total) AS totalRevenue
+        FROM sales_order
+        <where>
+            <if test="from != null">
+                AND  created_at &gt;= #{from}
+            </if>
+            <if test="to != null">
+                AND created_at &lt;= #{to}
+            </if>
+        </where>
+    </select>
+
 </mapper>
